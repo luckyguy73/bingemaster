@@ -1,6 +1,14 @@
+import java.util.Properties
+
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+val localProperties = Properties()
+val localPropertiesFile = project.rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -83,6 +91,21 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        // Retrieve the API key from local.properties
+        val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY", "")
+        // Retrieve the Read Access Token from local.properties
+        val tmdbReadAccessToken = localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")
+
+        // Add the API key as a BuildConfig field
+        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
+        // Add the Read Access Token as a BuildConfig field
+        buildConfigField("String", "TMDB_READ_ACCESS_TOKEN", "\"$tmdbReadAccessToken\"")
+
+        // Optional: Expose as resValue if needed for XML
+        resValue("string", "tmdb_api_key", "\"$tmdbApiKey\"")
+        resValue("string", "tmdb_read_access_token", "\"$tmdbReadAccessToken\"")
+
     }
     packaging {
         resources {
