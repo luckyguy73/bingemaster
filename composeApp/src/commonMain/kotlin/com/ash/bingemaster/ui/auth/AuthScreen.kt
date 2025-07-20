@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ash.bingemaster.core.ApiSecrets
 import com.ash.bingemaster.ui.components.GoogleButton
 import com.ash.bingemaster.core.util.Alpha
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
@@ -78,6 +79,10 @@ fun AuthScreen(
                         fontSize = 20.sp,
                         color = Color(0xFF000000)
                     )
+                    Column {
+                        // ... your existing UI elements
+                        Text("TMDB API Key (Android): ${ApiSecrets.tmdbApiKey}")
+                    }
                 }
                 GoogleButtonUiContainerFirebase(
                     linkAccount = false,

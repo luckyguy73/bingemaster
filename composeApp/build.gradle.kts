@@ -83,6 +83,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+        kotlin.sourceSets.getByName("desktopMain").kotlin.srcDir(project.layout.buildDirectory.dir("generated/sources/secrets/desktop/main"))
     }
 }
 
@@ -140,8 +141,27 @@ tasks.register("generateDesktopSecretsFile") {
     val tmdbReadAccessTokenProperty = project.providers.gradleProperty("TMDB_READ_ACCESS_TOKEN_FROM_LOCAL")
         .orElse(localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", ""))
 
+
+    val firebaseAppIdProperty = project.providers.gradleProperty("FIREBASE_APP_ID_FROM_LOCAL")
+        .orElse(localProperties.getProperty("FIREBASE_APP_ID", "")) // Reads from localProperties
+    val firebaseApiKeyProperty = project.providers.gradleProperty("FIREBASE_API_KEY_FROM_LOCAL")
+        .orElse(localProperties.getProperty("FIREBASE_API_KEY", "")) // Reads from localProperties
+    val firebaseProjectIdProperty = project.providers.gradleProperty("FIREBASE_PROJECT_ID_FROM_LOCAL")
+        .orElse(localProperties.getProperty("FIREBASE_PROJECT_ID", "")) // Reads from localProperties
+    val firebaseStorageBucketProperty = project.providers.gradleProperty("FIREBASE_STORAGE_BUCKET_FROM_LOCAL")
+        .orElse(localProperties.getProperty("FIREBASE_STORAGE_BUCKET", ""))
+    val firebaseDatabaseUrlProperty = project.providers.gradleProperty("FIREBASE_DATABASE_URL_FROM_LOCAL")
+        .orElse(localProperties.getProperty("FIREBASE_DATABASE_URL", ""))
+
+
+
     inputs.property("tmdbApiKey", tmdbApiKeyProperty)
     inputs.property("tmdbReadAccessToken", tmdbReadAccessTokenProperty)
+    inputs.property("firebaseAppId", firebaseAppIdProperty)
+    inputs.property("firebaseApiKey", firebaseApiKeyProperty)
+    inputs.property("firebaseProjectId", firebaseProjectIdProperty)
+    inputs.property("firebaseStorageBucket", firebaseStorageBucketProperty)
+    inputs.property("firebaseDatabaseUrl", firebaseDatabaseUrlProperty)
 
     val outputDir = project.layout.buildDirectory.dir("generated/sources/secrets/desktop/main/com/ash/bingemaster/core/generated")
     val outputFileProvider = outputDir.map { dir -> dir.file("DesktopGeneratedSecrets.kt") }
@@ -151,7 +171,13 @@ tasks.register("generateDesktopSecretsFile") {
     doLast {
         val tmdbApiKey = tmdbApiKeyProperty.get()
         val tmdbReadAccessToken = tmdbReadAccessTokenProperty.get()
-        val outputFile = outputFileProvider.get().asFile // Get the actual file from the provider
+        val firebaseAppId = firebaseAppIdProperty.get()
+        val firebaseApiKey = firebaseApiKeyProperty.get()
+        val firebaseProjectId = firebaseProjectIdProperty.get()
+        val firebaseStorageBucket = firebaseStorageBucketProperty.get()
+        val firebaseDatabaseUrl = firebaseDatabaseUrlProperty.get()
+
+        val outputFile = outputFileProvider.get().asFile
 
         outputFile.parentFile.mkdirs()
         outputFile.writeText(
@@ -160,6 +186,11 @@ tasks.register("generateDesktopSecretsFile") {
             
             internal const val GENERATED_TMDB_API_KEY: String = "$tmdbApiKey"
             internal const val GENERATED_TMDB_READ_ACCESS_TOKEN: String = "$tmdbReadAccessToken"
+            internal const val GENERATED_FIREBASE_APP_ID: String = "$firebaseAppId"
+            internal const val GENERATED_FIREBASE_API_KEY: String = "$firebaseApiKey"
+            internal const val GENERATED_FIREBASE_PROJECT_ID: String = "$firebaseProjectId"
+            internal const val GENERATED_FIREBASE_DATABASE_URL: String = "$firebaseDatabaseUrl"
+            internal const val GENERATED_FIREBASE_STORAGE_BUCKET: String = "$firebaseStorageBucket"
             """.trimIndent()
         )
         println("Generated desktop secrets file at: ${outputFile.absolutePath}")
@@ -167,6 +198,10 @@ tasks.register("generateDesktopSecretsFile") {
 }
 
 tasks.named("desktopProcessResources") {
+    dependsOn(tasks.named("generateDesktopSecretsFile"))
+}
+
+tasks.named("compileKotlinDesktop") {
     dependsOn(tasks.named("generateDesktopSecretsFile"))
 }
 
