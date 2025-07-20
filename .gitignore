@@ -1,0 +1,59 @@
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+captures
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+
+# Built application files
+*.apk
+*.aab
+*.ap_
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration files (sdk path, etc)
+local.properties
+
+# Android Studio specific files and directories
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+captures/
+output.json
+
+# Keystore files
+*.jks
+*.keystore
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+
+# Google Services (e.g., Google AdMob)
+google-services.json # If you're checking this in, ensure it's not specific to a debug build if shared
+
+# Secrets (if you have a mechanism to populate them at build time)
+secrets.properties

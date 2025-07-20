@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "298543559949",
+    "project_id": "bingemaster-diamond",
+    "storage_bucket": "bingemaster-diamond.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298543559949:android:bd83d480230833b4276c44",
+        "android_client_info": {
+          "package_name": "com.ash.bingemaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298543559949-6g55edodbfvkshgr5qsgrh8rjho3cqvc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ash.bingemaster",
+            "certificate_hash": "215d351e29cf4c773b33be5af5edf2593ee40f4b"
+          }
+        },
+        {
+          "client_id": "298543559949-0bmnh0hia9suvnbihjiob72rifmo858o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZWTZfd-vtARI5rmi9Zj64Kjid21j1a2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298543559949-0bmnh0hia9suvnbihjiob72rifmo858o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
