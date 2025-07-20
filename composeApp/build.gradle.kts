@@ -112,6 +112,9 @@ android {
         resValue("string", "tmdb_read_access_token", "\"$tmdbReadAccessToken\"")
 
     }
+    buildFeatures {
+        buildConfig = true // Add this line
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -132,17 +135,26 @@ tasks.register("generateDesktopSecretsFile") {
     description = "Generates a Kotlin file with API secrets for the desktop target."
     group = "build"
 
-    val outputDir = layout.buildDirectory.dir("generated/sources/secrets/desktop/main/com/ash/bingemaster/core/generated")
-    val outputFile = outputDir.get().file("DesktopGeneratedSecrets.kt")
+    val tmdbApiKeyProperty = project.providers.gradleProperty("TMDB_API_KEY_FROM_LOCAL")
+        .orElse(localProperties.getProperty("TMDB_API_KEY", ""))
+    val tmdbReadAccessTokenProperty = project.providers.gradleProperty("TMDB_READ_ACCESS_TOKEN_FROM_LOCAL")
+        .orElse(localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", ""))
 
-    outputs.file(outputFile).withPropertyName("outputSecretFile")
+    inputs.property("tmdbApiKey", tmdbApiKeyProperty)
+    inputs.property("tmdbReadAccessToken", tmdbReadAccessTokenProperty)
+
+    val outputDir = project.layout.buildDirectory.dir("generated/sources/secrets/desktop/main/com/ash/bingemaster/core/generated")
+    val outputFileProvider = outputDir.map { dir -> dir.file("DesktopGeneratedSecrets.kt") }
+
+    outputs.file(outputFileProvider).withPropertyName("outputSecretFile")
 
     doLast {
-        val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY", "")
-        val tmdbReadAccessToken = localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")
+        val tmdbApiKey = tmdbApiKeyProperty.get()
+        val tmdbReadAccessToken = tmdbReadAccessTokenProperty.get()
+        val outputFile = outputFileProvider.get().asFile // Get the actual file from the provider
 
-        outputFile.asFile.parentFile.mkdirs()
-        outputFile.asFile.writeText(
+        outputFile.parentFile.mkdirs()
+        outputFile.writeText(
             """
             package com.ash.bingemaster.core.generated
             
@@ -150,13 +162,13 @@ tasks.register("generateDesktopSecretsFile") {
             internal const val GENERATED_TMDB_READ_ACCESS_TOKEN: String = "$tmdbReadAccessToken"
             """.trimIndent()
         )
+        println("Generated desktop secrets file at: ${outputFile.absolutePath}")
     }
 }
 
 tasks.named("desktopProcessResources") {
     dependsOn(tasks.named("generateDesktopSecretsFile"))
 }
-
 
 dependencies {
     debugImplementation(compose.uiTooling)
