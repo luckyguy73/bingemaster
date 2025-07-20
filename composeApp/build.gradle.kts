@@ -37,8 +37,13 @@ kotlin {
             isStatic = true
         }
     }
-    
-    jvm("desktop")
+
+    jvm("desktop") {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
     
     sourceSets {
         val desktopMain by getting
@@ -122,6 +127,36 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+tasks.register("generateDesktopSecretsFile") {
+    description = "Generates a Kotlin file with API secrets for the desktop target."
+    group = "build"
+
+    val outputDir = layout.buildDirectory.dir("generated/sources/secrets/desktop/main/com/ash/bingemaster/core/generated")
+    val outputFile = outputDir.get().file("DesktopGeneratedSecrets.kt")
+
+    outputs.file(outputFile).withPropertyName("outputSecretFile")
+
+    doLast {
+        val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY", "")
+        val tmdbReadAccessToken = localProperties.getProperty("TMDB_READ_ACCESS_TOKEN", "")
+
+        outputFile.asFile.parentFile.mkdirs()
+        outputFile.asFile.writeText(
+            """
+            package com.ash.bingemaster.core.generated
+            
+            internal const val GENERATED_TMDB_API_KEY: String = "$tmdbApiKey"
+            internal const val GENERATED_TMDB_READ_ACCESS_TOKEN: String = "$tmdbReadAccessToken"
+            """.trimIndent()
+        )
+    }
+}
+
+tasks.named("desktopProcessResources") {
+    dependsOn(tasks.named("generateDesktopSecretsFile"))
+}
+
 
 dependencies {
     debugImplementation(compose.uiTooling)
